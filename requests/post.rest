@@ -3,6 +3,18 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
+  "title": "The Road to React",
+  "author": "Robin Wieruch",
+  "url": "https://www.roadtoreact.com/",
+  "likes": 100
+  }
+
+###
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
   "title": "The Art of War",
   "author": "Sun Tzu",
   "url": "https://www.amazon.com/Art-War-Sun-Tzu/dp/1599869772",
