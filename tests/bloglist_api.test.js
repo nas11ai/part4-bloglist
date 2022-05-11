@@ -28,6 +28,13 @@ test('all blogs can be viewed', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
 });
 
+test('unique identifier property of the blog posts is named id', async () => {
+  const firstBlogId = helper.initialBlogs[0].id;
+
+  const response = await api.get(`/api/blogs/${firstBlogId}`);
+  expect(response.body.id).toBe(firstBlogId);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
