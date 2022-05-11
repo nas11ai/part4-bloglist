@@ -100,6 +100,23 @@ test('Success to delete a blog', async () => {
   expect(titles).not.toContainEqual(blogToDelete.title);
 });
 
+test('Success to add one like to a blog', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToUpdate = blogsAtStart[0];
+  const blogLikesBefore = blogToUpdate.likes;
+  blogToUpdate.likes = blogLikesBefore + 1;
+
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(blogToUpdate)
+    .expect(200);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const updatedBlog = blogsAtEnd[0];
+
+  expect(updatedBlog.likes).toBe(blogLikesBefore + 1);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
