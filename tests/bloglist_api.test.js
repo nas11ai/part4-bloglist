@@ -74,6 +74,17 @@ test('if the likes property is missing from the request, it will default to the 
   expect(response.body.likes).toBe(0);
 });
 
+test('If title and url are missing, respond with 400 bad request', async () => {
+  const newBlog = {
+    author: 'Mark Manson',
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
