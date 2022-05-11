@@ -35,6 +35,29 @@ test('unique identifier property of the blog posts is named id', async () => {
   expect(response.body.id).toBe(firstBlogId);
 });
 
+test('a valid blog can be added', async () => {
+  const newBlog = {
+    title: 'The Subtle Art of Not Giving a F*ck',
+    author: 'Mark Manson',
+    url: 'https://www.amazon.com/Subtle-Art-Not-Giving-Counterintuitive/dp/0062457713',
+    likes: 69,
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+  const titles = blogsAtEnd.map((blog) => blog.title);
+  expect(titles).toContainEqual(
+    'The Subtle Art of Not Giving a F*ck',
+  );
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
