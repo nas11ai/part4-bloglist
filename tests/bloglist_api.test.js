@@ -85,6 +85,21 @@ test('If title and url are missing, respond with 400 bad request', async () => {
     .expect(400);
 });
 
+test('Success to delete a blog', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  const titles = blogsAtEnd.map((blog) => blog.title);
+
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+  expect(titles).not.toContainEqual(blogToDelete.title);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
