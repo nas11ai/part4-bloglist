@@ -130,7 +130,7 @@ describe('when there is only one user in db', () => {
   });
 
   test('creation success with a fresh username', async () => {
-    const userAtStart = await helper.usersInDb();
+    const usersAtStart = await helper.usersInDb();
 
     const user = { username: 'newuser', name: 'user', password: 'password' };
 
@@ -141,10 +141,63 @@ describe('when there is only one user in db', () => {
       .expect('Content-Type', /application\/json/);
 
     const usersAtEnd = await helper.usersInDb();
-    expect(usersAtEnd).toHaveLength(userAtStart.length + 1);
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1);
 
     const usernames = usersAtEnd.map((u) => u.username);
     expect(usernames).toContainEqual(user.username);
+  });
+
+  test('creation fails with proper statuscode and message if username or password is not available', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const user = { name: 'user' };
+
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const userAtEnd = await helper.usersInDb();
+
+    expect(userAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with proper statuscode and message if username or password is not at least 3 characters long', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const user = { username: 'no', name: 'invalid user', password: 'no' };
+
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    const userAtEnd = await helper.usersInDb();
+
+    expect(userAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with proper statuscode and message if username already taken', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const user = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'password',
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(user)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('username must be unique');
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
   });
 });
 
