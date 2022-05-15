@@ -20,3 +20,13 @@ Content-Type: application/json
   "url": "https://www.amazon.com/Art-War-Sun-Tzu/dp/1599869772",
   "likes": 89
 }
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "test123",
+  "name": "test",
+  "password": "password"
+}

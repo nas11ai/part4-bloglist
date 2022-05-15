@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
+const bcrypt = require('bcrypt');
 const app = require('../app');
 
 const api = supertest(app);
 
 const Blog = require('../models/blog');
+const User = require('../models/user');
 const helper = require('./bloglist_helper');
 
 beforeEach(async () => {
@@ -115,6 +117,35 @@ test('Success to add one like to a blog', async () => {
   const updatedBlog = blogsAtEnd[0];
 
   expect(updatedBlog.likes).toBe(blogLikesBefore + 1);
+});
+
+describe('when there is only one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('password', 10);
+    const user = new User({ username: 'root', passwordHash });
+
+    await user.save();
+  });
+
+  test('creation success with a fresh username', async () => {
+    const userAtStart = await helper.usersInDb();
+
+    const user = { username: 'newuser', name: 'user', password: 'password' };
+
+    await api
+      .post('/api/users')
+      .send(user)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(userAtStart.length + 1);
+
+    const usernames = usersAtEnd.map((u) => u.username);
+    expect(usernames).toContainEqual(user.username);
+  });
 });
 
 afterAll(() => {
