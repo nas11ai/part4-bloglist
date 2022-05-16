@@ -51,3 +51,15 @@ Content-Type: application/json
   "username": "test123",
   "password": "password"
 }
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxMjMiLCJpZCI6IjYyODBkZDRkZjZiOGIxNGQ2NzA0OTdkYSIsImlhdCI6MTY1MjY5MTEzMn0.ggvQY_11co3EgfUutaSDft-80TCUjgxo86hJaGmlx5A
+
+{
+  "title": "Also sprach Zarathustra: Ein Buch für Alle und Keinen",
+  "author": "Friedrich Nietzsche",
+  "url": "https://www.amazon.com/Also-sprach-Zarathustra-Keinen-German/dp/1974166880",
+  "likes": 100
+}
