@@ -30,3 +30,15 @@ Content-Type: application/json
   "name": "test",
   "password": "password"
 }
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "The Subtle Art of Not Giving a F*ck",
+  "author": "Mark Manson",
+  "url": "https://www.amazon.com/Subtle-Art-Not-Giving-Counterintuitive/dp/0062457713",
+  "likes": 69,
+  "user": "6280dd4df6b8b14d670497da"
+}

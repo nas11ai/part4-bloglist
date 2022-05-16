@@ -201,6 +201,63 @@ describe('when there is only one user in db', () => {
   });
 });
 
+describe('when an user send a blog', () => {
+  test('the blog must have id of the user who created it', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const usersInDb = await helper.usersInDb();
+    const user = usersInDb[0];
+
+    const newBlog = {
+      title: 'The Subtle Art of Not Giving a F*ck',
+      author: 'Mark Manson',
+      url: 'https://www.amazon.com/Subtle-Art-Not-Giving-Counterintuitive/dp/0062457713',
+      likes: 69,
+      user: user.id,
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length + 1);
+
+    const users = blogsAtEnd.map((b) => (
+      b.user === undefined
+        ? undefined
+        : b.user.toString()
+    ));
+    expect(users).toContain(user.id);
+  });
+
+  test('user must have ids of blog that he/she has created', async () => {
+    const usersAtStart = await helper.usersInDb();
+    const user = usersAtStart[0];
+
+    const newBlog = {
+      title: 'The Subtle Art of Not Giving a F*ck',
+      author: 'Mark Manson',
+      url: 'https://www.amazon.com/Subtle-Art-Not-Giving-Counterintuitive/dp/0062457713',
+      likes: 69,
+      user: user.id,
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd[0].blogs).toHaveLength(usersAtStart[0].blogs.length + 1);
+
+    const blogsId = usersAtEnd[0].blogs.map((blog) => blog.toString());
+    expect(blogsId).toContain(response.body.id);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
