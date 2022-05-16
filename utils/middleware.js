@@ -1,8 +1,10 @@
 const morgan = require('morgan');
 const logger = require('./logger');
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (request, response, next) => {
   response.status(404).send({ error: 'unknown endpoint' });
+
+  return next();
 };
 
 const errorHandler = (error, request, response, next) => {
@@ -22,4 +24,18 @@ const errorHandler = (error, request, response, next) => {
   return next(error);
 };
 
-module.exports = { morgan, unknownEndpoint, errorHandler };
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+    request.token = authorization.substring(7);
+  }
+
+  return next();
+};
+
+module.exports = {
+  morgan,
+  unknownEndpoint,
+  errorHandler,
+  tokenExtractor,
+};
