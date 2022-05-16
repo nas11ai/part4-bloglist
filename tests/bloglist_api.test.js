@@ -44,7 +44,6 @@ describe('when there are initial blogs in db', () => {
   test('all blogs can be viewed', async () => {
     await api
       .get('/api/blogs')
-      .set('Authorization', `bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
@@ -136,7 +135,6 @@ describe('when there are initial blogs in db', () => {
 
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
-      .set('Authorization', `bearer ${token}`)
       .send(blogToUpdate)
       .expect(200);
 

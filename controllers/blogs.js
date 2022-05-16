@@ -1,6 +1,7 @@
 const blogRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
+const { userExtractor } = require('../utils/middleware');
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog
@@ -17,7 +18,7 @@ blogRouter.get('/:id', async (request, response) => {
   return response.json(blog);
 });
 
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', userExtractor, async (request, response) => {
   const user = await User.findById(request.userId);
 
   const blog = new Blog(request.body);
@@ -31,7 +32,7 @@ blogRouter.post('/', async (request, response) => {
   return response.status(201).json(savedBlog);
 });
 
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id);
   if (!(blog.user.toString() === request.userId.toString())) {
     return response.status(403).json({ error: 'forbidden: invalid user' });

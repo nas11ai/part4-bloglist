@@ -21,7 +21,7 @@ app.use(middleware.morgan('tiny'));
 app.use(middleware.tokenExtractor);
 
 app.use('/api/users', middleware.userValidator, usersRouter);
-app.use('/api/blogs', middleware.userExtractor, blogRouter);
+app.use('/api/blogs', blogRouter);
 app.use('/api/login', loginRouter);
 
 app.use(middleware.unknownEndpoint);
