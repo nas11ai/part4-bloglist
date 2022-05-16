@@ -1,5 +1,4 @@
 const blogRouter = require('express').Router();
-const jwt = require('jsonwebtoken');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
@@ -19,12 +18,7 @@ blogRouter.get('/:id', async (request, response) => {
 });
 
 blogRouter.post('/', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken) {
-    return response.status(401).json({ error: 'token is missing or invalid' });
-  }
-
-  const user = await User.findById(decodedToken.id);
+  const user = await User.findById(request.userId);
 
   const blog = new Blog(request.body);
 
@@ -38,13 +32,8 @@ blogRouter.post('/', async (request, response) => {
 });
 
 blogRouter.delete('/:id', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken) {
-    return response.status(401).json({ error: 'token is missing or invalid' });
-  }
-
-  const blog = await Blog.findById(decodedToken.id);
-  if (!(blog.user.toString() === decodedToken.id.toString())) {
+  const blog = await Blog.findById(request.userId);
+  if (!(blog.user.toString() === request.userId.toString())) {
     return response.status(403).json({ error: 'forbidden: invalid user' });
   }
 
