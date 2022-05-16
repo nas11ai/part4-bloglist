@@ -32,7 +32,7 @@ blogRouter.post('/', async (request, response) => {
 });
 
 blogRouter.delete('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.userId);
+  const blog = await Blog.findById(request.params.id);
   if (!(blog.user.toString() === request.userId.toString())) {
     return response.status(403).json({ error: 'forbidden: invalid user' });
   }
