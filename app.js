@@ -6,6 +6,7 @@ const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
 const usersRouter = require('./controllers/users');
 const blogRouter = require('./controllers/blogs');
+const loginRouter = require('./controllers/login');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(middleware.morgan('tiny'));
 
 app.use('/api/users', usersRouter);
 app.use('/api/blogs', blogRouter);
+app.use('/api/login', loginRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

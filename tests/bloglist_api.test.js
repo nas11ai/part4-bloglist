@@ -125,6 +125,13 @@ describe('when there is only one user in db', () => {
 
     const passwordHash = await bcrypt.hash('password', 10);
     const user = new User({ username: 'root', passwordHash });
+    await Blog.deleteMany({});
+    // eslint-disable-next-line no-restricted-syntax
+    for (const blog of helper.initialBlogs) {
+      const blogObject = new Blog(blog);
+      // eslint-disable-next-line no-await-in-loop
+      await blogObject.save();
+    }
 
     await user.save();
   });
@@ -255,6 +262,41 @@ describe('when an user send a blog', () => {
 
     const blogsId = usersAtEnd[0].blogs.map((blog) => blog.toString());
     expect(blogsId).toContain(response.body.id);
+  });
+});
+
+describe('when user login', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('password', 10);
+    const user = new User({ username: 'root', passwordHash });
+
+    await user.save();
+  });
+
+  test('succeess if username and password are exist in db', async () => {
+    const usersInDb = await helper.usersInDb();
+    const user = usersInDb[0];
+
+    await api
+      .post('/api/login')
+      .send({ username: user.username, password: 'password' })
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  });
+
+  test('fails if username or password are not exist in db', async () => {
+    const user = {
+      username: 'invalidUsername',
+      password: 'invalidPassword',
+    };
+
+    await api
+      .post('/api/login')
+      .send(user)
+      .expect(401)
+      .expect('Content-Type', /application\/json/);
   });
 });
 
